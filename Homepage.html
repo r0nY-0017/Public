@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Rent</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            font-family: serif;
+        }
+        
+        ::selection{
+            color: #fff;
+            background: #00ff00
+        }
+        
+        .banner{
+            height: 100vh;
+            width: 100%;
+            background-image: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url(room3.jpg);
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .navbar{
+            width: 90%;
+            margin: auto;
+            padding: -5px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+        
+        .logo{
+            height: 50px;
+            cursor: pointer;
+        }
+        
+        .item{
+            position: relative;
+        }
+        
+        .item a{
+            text-decoration: none;
+            font-size: 17px;
+            color: #fff;
+            margin: 10px;
+            text-transform: uppercase;
+        }
+        
+        .item a:hover{
+            color: #00ff00;
+        }
+        
+        .login{
+            padding-right: 20px;
+        }
+        .login button{
+            height: 30px;
+            width: 80px;
+            font-size: 18px;
+            background: transparent;
+            color: white;
+            border: 1px solid #00ff00;
+            border-radius: 10px;
+        }
+        .login button:hover{
+            background: #00ff00;
+            color: #000;
+        }
+        
+        .content h1{
+            color:#fff;
+            font-size: 60px;
+            position: absolute;
+            top: 40%;
+            left: 22%;
+        }
+        .content p{
+            color:#fff;
+            font-size: 20px;
+            position: absolute;
+            top: 53%;
+            left: 12%;
+        }
+        .web, .home{
+            color: #00ff00;
+        }
+        
+        
+        .btn{
+            position: absolute;
+            top: 65%;
+            left: 47%;
+            width: 150px;
+            height: 40px;
+        
+            background: #fff;
+            color: #000;
+            border-color: #000;
+            border-radius: 20px;
+        }
+        
+        .btn:hover{
+            background: #00ff00;
+            color: black;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="banner">
+        <div class="navbar">
+            <img src="logo.png" class="logo">
+            <div class="item">
+                <a href="#">Home</a>
+                <a href="#">Bedroom</a>
+                <a href="#">Dining</a>
+                <a href="#">Kitchen</a>
+                <a href="#">Backyard</a>
+            </div>
+
+            <div class="login">
+                <button>Sign up</button>
+                <button>Log in</button>
+            </div>
+        </div>
+        <hr>
+        <div class="content">
+            <h1>WELCOME TO OUR <span class="web">WEBSITE</span></h1>
+            <p>This is a <span class="home">Home Rental</span> Website.
+               Through our website you will find the house of your choices
+               and if you are the owner of the house<br> you will find the tenant
+               of your choices through our website. Thank you for being with us.
+            </p>
+            <button class="btn">Visit Website</button>
+        </div>
+    </div>
+</body>
+</html>
