@@ -1,8 +1,8 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-//FCFS
 int main(){
+    cout << "---------First Come First Service---------\n\n";
     int n, a,b,at, bt, ct, tat, wt;
     vector<vector<int>> FCFS;
     vector<int> v;
@@ -12,8 +12,8 @@ int main(){
         cout << "Enter AT & BT for Process-" << i+1 << " : ";
         cin >> a >> b;
         v.push_back(a);
-        v.push_back(b);
         v.push_back(i+1);
+        v.push_back(b);
         FCFS.push_back(v);
         v.clear();
     }
@@ -21,8 +21,7 @@ int main(){
     sort(FCFS.begin(), FCFS.end());
 
     for(int i=0; i<n; i++){
-        swap(FCFS[i].front(), FCFS[i].back());
-        swap(FCFS[i][1], FCFS[i].back());
+        swap(FCFS[i].front(), FCFS[i][1]);
     }
 
     int cur = 0;
