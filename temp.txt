@@ -6,7 +6,255 @@ void main() {
 
 class MyApp extends StatelessWidget{
   const MyApp({super.key});
+import 'package:flutter/material.dart';
 
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget{
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: HomeActivity(),
+      );
+  }
+}
+
+class HomeActivity extends StatelessWidget{
+  const HomeActivity({super.key});
+
+  SnackMessage(message, context){
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  AlertMessage(titlee, cntnt, activity, context){
+    return showDialog(
+      context: context, 
+      builder: (BuildContext context){
+        return AlertDialog(
+          title: titlee,
+          content: cntnt,
+          actions: [
+            TextButton(
+              onPressed: (){
+                Navigator.push(context,
+                  MaterialPageRoute( builder: (context) => activity));
+              },
+              child: Text("Yes")
+            ),
+
+            TextButton(
+              onPressed: (){
+                Navigator.of(context).pop();
+              },
+              child: Text("No")
+            ),
+          ],
+        );
+      }
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text("AppBar"),
+          centerTitle: true,
+          backgroundColor: Colors.amber,
+
+          actions: [
+            IconButton(onPressed: (){SnackMessage("Home Button Pressed", context);}, icon: Icon(Icons.home)),
+            IconButton(onPressed: (){SnackMessage("Email Button Pressed", context);}, icon: Icon(Icons.email)),
+            IconButton(onPressed: (){SnackMessage("Search Button Pressed", context);}, icon: Icon(Icons.search)),
+            
+          ],
+        ),
+
+        bottomNavigationBar: BottomNavigationBar(
+          items: [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+            BottomNavigationBarItem(icon: Icon(Icons.contact_emergency), label: "Contact"),
+            BottomNavigationBarItem(icon: Icon(Icons.people), label: "Profile"),
+          ],
+
+          onTap: (value){
+            if(value == 0){
+              SnackMessage("Bottom Navigation Home Button is Pressed", context);
+            }
+            
+            else if(value == 1){
+              SnackMessage("Bottom Navigation Contact Button is Pressed", context);
+            }
+            
+            else{
+              SnackMessage("Bottom Navigation Profile Button is Pressed", context);
+            }
+          },
+          ),
+
+
+          drawer: Drawer(
+            child: ListView(
+              children: [
+                DrawerHeader(child: Text("DrawerHeader1")),
+                ListTile(
+                  leading: Icon(Icons.home),
+                  title: Text("Home"),
+                  onTap: (){
+                    SnackMessage("Drawer Home Button is Pressed", context);
+                  },
+                )
+              ],
+            ),
+          ),
+
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    color: Colors.green,
+                    width: 150,
+                    height: 150,
+                    //child: Image.asset("resources/images/one.webp"),
+                    child: ElevatedButton(onPressed: (){AlertMessage(Text("Green Alert Box"), Text("Green Button Alert Box"), GreenActivity(), context);}, child: Text("Green Click")),
+                  ),
+
+                  Container(
+                    color: Colors.red,
+                    width: 150,
+                    height: 150,
+                    //child: Image.asset("resources/images/two.webp"),
+                    child: ElevatedButton(onPressed: (){AlertMessage(Text("Red Alert Box"), Text("Red Button Alert Box"), RedActivity(), context);}, child: Text("Red Click")),
+                  ),
+                  
+
+                  Container(
+                    color: Colors.blue,
+                    width: 150,
+                    height: 150,
+                    //child: Image.asset("resources/images/three.webp"),
+                    child: ElevatedButton(onPressed: (){AlertMessage(Text("Blue Alert Box"), Text("Blue Button Alert Box"), BlueActivity(), context);}, child: Text("Blue Click")),
+                  ),
+                ],
+              ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    color: Colors.green,
+                    width: 150,
+                    height: 150,
+                    child: Image.asset("resources/images/four.png"),
+                  ),
+
+                  Container(
+                    color: Colors.red,
+                    width: 150,
+                    height: 150,
+                    child: Image.asset("resources/images/five.jpeg"),
+                  ),
+                  
+
+                  Container(
+                    color: Colors.blue,
+                    width: 150,
+                    height: 150,
+                    child: Image.asset("resources/images/six.jpeg"),
+                  ),
+                ],
+              ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    color: Colors.green,
+                    width: 150,
+                    height: 150,
+                    child: Image.asset("resources/images/seven.png"),
+                  ),
+
+                  Container(
+                    color: Colors.red,
+                    width: 150,
+                    height: 150,
+                    child: Image.asset("resources/images/eight.jpeg"),
+                  ),
+                  
+
+                  Container(
+                    color: Colors.blue,
+                    width: 150,
+                    height: 150,
+                    child: Image.asset("resources/images/nine.jpeg"),
+                  ),
+                ],
+              )
+            ],
+
+          ),
+
+          floatingActionButton: FloatingActionButton(
+            onPressed: (){
+              SnackMessage("Floating Action Button is Pressed", context);
+            },
+            child: Icon(Icons.camera),
+            backgroundColor: Colors.amber,
+          ),
+    );
+  }
+}
+
+
+
+
+class GreenActivity extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Green App Bar"),
+        backgroundColor : Colors.green,
+        centerTitle: true,
+      ),
+    );
+  }
+}
+
+class RedActivity extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Red App Bar"),
+        backgroundColor : Colors.red,
+        centerTitle: true,
+      ),
+    );
+  }
+}
+
+class BlueActivity extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Blue App Bar"),
+        backgroundColor : Colors.blue,
+        centerTitle: true,
+      ),
+    );
+  }
+}
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
