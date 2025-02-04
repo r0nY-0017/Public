@@ -18,8 +18,36 @@ class MyApp extends StatelessWidget{
 
 class HomeActivity extends StatelessWidget{
   const HomeActivity({super.key});
+
   SnackMessage(message, context){
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  AlertMessage(txt, context){
+    return showDialog(
+      context: context, 
+      builder: (BuildContext context){
+        return AlertDialog(
+          title: Text("Alert Box"),
+          content: txt,
+          actions: [
+            TextButton(
+              onPressed: (){
+                Navigator.of(context).pop();
+              },
+              child: Text("Yes")
+            ),
+
+            TextButton(
+              onPressed: (){
+                Navigator.of(context).pop();
+              },
+              child: Text("No")
+            ),
+          ],
+        );
+      }
+    );
   }
 
   @override
@@ -87,7 +115,7 @@ class HomeActivity extends StatelessWidget{
                     width: 150,
                     height: 150,
                     //child: Image.asset("resources/images/one.webp"),
-                    child: ElevatedButton(onPressed: (){}, child: Text(" Green Click")),
+                    child: ElevatedButton(onPressed: (){AlertMessage(Text("Green Button Alert Box"), context );}, child: Text("Green Click")),
                   ),
 
                   Container(
@@ -95,7 +123,7 @@ class HomeActivity extends StatelessWidget{
                     width: 150,
                     height: 150,
                     //child: Image.asset("resources/images/two.webp"),
-                    child: ElevatedButton(onPressed: (){}, child: Text("Red Click")),
+                    child: ElevatedButton(onPressed: (){AlertMessage(Text("Red Button Alert Box"), context);}, child: Text("Red Click")),
                   ),
                   
 
@@ -104,7 +132,7 @@ class HomeActivity extends StatelessWidget{
                     width: 150,
                     height: 150,
                     //child: Image.asset("resources/images/three.webp"),
-                    child: ElevatedButton(onPressed: (){}, child: Text("Blue Click")),
+                    child: ElevatedButton(onPressed: (){AlertMessage(Text("Blue Button Alert Box"), context);}, child: Text("Blue Click")),
                   ),
                 ],
               ),
