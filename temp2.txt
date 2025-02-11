@@ -1,0 +1,74 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: HomeActivity(),
+    );
+  }
+}
+
+class HomeActivity extends StatelessWidget {
+  TextEditingController tController = new TextEditingController();
+
+  PopUpDialog(input_text, context) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Alert Dialog"),
+          content: tController.text.isEmpty
+              ? Text("You have not entered any text")
+              : Text("Kire Manger Nati $input_text"),
+          actions: [
+            TextButton(onPressed: () {}, child: Text("Yes")),
+            TextButton(onPressed: () {
+              Navigator.of(context).pop();
+            }, child: Text("No")),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Md Mehedi Hasan"),
+        backgroundColor: Colors.green,
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: tController,
+              decoration: InputDecoration(
+                hintText: "Enter your name",
+                labelText: "Name",
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                PopUpDialog(tController.text, context);
+              },
+              child: Text("Click Me"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
