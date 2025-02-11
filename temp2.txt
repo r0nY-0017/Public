@@ -16,27 +16,22 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomeActivity extends StatelessWidget {
-  TextEditingController tController = new TextEditingController();
+class HomeActivity extends StatefulWidget {
+  @override
+  MyState createState() => MyState();
+}
 
-  PopUpDialog(input_text, context) {
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Alert Dialog"),
-          content: tController.text.isEmpty
-              ? Text("You have not entered any text")
-              : Text("Kire Manger Nati $input_text"),
-          actions: [
-            TextButton(onPressed: () {}, child: Text("Yes")),
-            TextButton(onPressed: () {
-              Navigator.of(context).pop();
-            }, child: Text("No")),
-          ],
-        );
-      },
-    );
+class MyState extends State<HomeActivity> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  String email = '';
+  String password = '';
+
+  void displayCredentials() {
+    setState(() {
+      email = emailController.text;
+      password = passwordController.text;
+    });
   }
 
   @override
@@ -52,20 +47,31 @@ class HomeActivity extends StatelessWidget {
         child: Column(
           children: [
             TextField(
-              controller: tController,
+              controller: emailController,
               decoration: InputDecoration(
-                hintText: "Enter your name",
-                labelText: "Name",
+                hintText: "Enter your email",
+                labelText: "Email",
                 border: OutlineInputBorder(),
               ),
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                PopUpDialog(tController.text, context);
-              },
-              child: Text("Click Me"),
+            TextField(
+              controller: passwordController,
+              decoration: InputDecoration(
+                hintText: "Enter your password",
+                labelText: "Password",
+                border: OutlineInputBorder(),
+              ),
+              obscureText: true,
             ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: displayCredentials,
+              child: Text("Submit"),
+            ),
+            SizedBox(height: 20),
+            Text("Email: $email"),
+            Text("Password: $password"),
           ],
         ),
       ),
