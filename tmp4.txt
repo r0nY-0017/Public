@@ -9,7 +9,9 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: HomeActivityState()
       );
     }
@@ -33,7 +35,40 @@ class HomeActivity extends State<HomeActivityState> {
         centerTitle: true,
       ),
       body: Center(
-        child: Text("Hello"),
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const RedActivityState()),
+            );
+          },
+          child: const Text('Go to Red Activity'),
+        ),
+      ),
+    );
+  }
+}
+
+
+class RedActivityState extends StatefulWidget {
+
+  const RedActivityState({super.key});
+
+  @override
+  RedActivity createState() => RedActivity();
+}
+
+class RedActivity extends State<RedActivityState> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Red Activity'),
+        backgroundColor: Colors.red,
+        centerTitle: true,
+      ),
+      body: Center(
+        child: Text("This is Red Activity", style: TextStyle(fontSize: 25),),
       ),
     );
   }
