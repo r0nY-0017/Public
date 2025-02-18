@@ -1,0 +1,40 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MainApp());
+}
+
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: HomeActivityState()
+      );
+    }
+}
+
+class HomeActivityState extends StatefulWidget {
+
+  const HomeActivityState({super.key});
+
+  @override
+  HomeActivity createState() => HomeActivity();
+}
+
+class HomeActivity extends State<HomeActivityState> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Home Activity'),
+        backgroundColor: Colors.amber,
+        centerTitle: true,
+      ),
+      body: Center(
+        child: Text("Hello"),
+      ),
+    );
+  }
+}
