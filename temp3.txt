@@ -1,0 +1,236 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Calculator App',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: FirstPage(),
+    );
+  }
+}
+
+class FirstPage extends StatefulWidget {
+  @override
+  _FirstPageState createState() => _FirstPageState();
+}
+
+class _FirstPageState extends State<FirstPage> {
+  final TextEditingController num1Controller = TextEditingController();
+
+  void showAlert(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Input Error'),
+        content: Text('Please enter a value before proceeding.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Enter First Number')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: num1Controller,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Enter Number'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (num1Controller.text.isEmpty) {
+                  showAlert(context);
+                  return;
+                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SecondPage(num1: double.parse(num1Controller.text)),
+                  ),
+                );
+              },
+              child: Text('Next'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SecondPage extends StatefulWidget {
+  final double num1;
+  SecondPage({required this.num1});
+
+  @override
+  _SecondPageState createState() => _SecondPageState();
+}
+
+class _SecondPageState extends State<SecondPage> {
+  final TextEditingController operatorController = TextEditingController();
+
+  void showAlert(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Input Error'),
+        content: Text('Please enter an operator before proceeding.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Enter Operator')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: operatorController,
+              decoration: InputDecoration(labelText: 'Enter Operator (+, -, *, /)'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (operatorController.text.isEmpty) {
+                  showAlert(context);
+                  return;
+                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ThirdPage(num1: widget.num1, operator: operatorController.text),
+                  ),
+                );
+              },
+              child: Text('Next'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ThirdPage extends StatefulWidget {
+  final double num1;
+  final String operator;
+  ThirdPage({required this.num1, required this.operator});
+
+  @override
+  _ThirdPageState createState() => _ThirdPageState();
+}
+
+class _ThirdPageState extends State<ThirdPage> {
+  final TextEditingController num2Controller = TextEditingController();
+
+  void showAlert(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Input Error'),
+        content: Text('Please enter a value before proceeding.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Enter Second Number')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: num2Controller,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Enter Number'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (num2Controller.text.isEmpty) {
+                  showAlert(context);
+                  return;
+                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ResultPage(
+                      num1: widget.num1,
+                      operator: widget.operator,
+                      num2: double.parse(num2Controller.text),
+                    ),
+                  ),
+                );
+              },
+              child: Text('Calculate'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ResultPage extends StatelessWidget {
+  final double num1;
+  final String operator;
+  final double num2;
+
+  ResultPage({required this.num1, required this.operator, required this.num2});
+
+  double calculateResult() {
+    switch (operator) {
+      case '+':
+        return num1 + num2;
+      case '-':
+        return num1 - num2;
+      case '*':
+        return num1 * num2;
+      case '/':
+        return num1 / num2;
+      default:
+        return 0;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Result')),
+      body: Center(
+        child: Text('Result: ${calculateResult()}', style: TextStyle(fontSize: 24)),
+      ),
+    );
+  }
+}
