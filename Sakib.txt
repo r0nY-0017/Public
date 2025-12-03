@@ -1,0 +1,530 @@
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
+#include <stdio.h>
+#include <math.h>
+
+int isDay = 1; // 1 for day, 0 for night
+int frame = 0;
+float flap = 0.0;
+int paused = 0;
+float speed = 1.0;
+float p = 0.0;
+int door_open = 0;
+float bird_x1 = 140.0, bird_y1 = 380.0, bird_x2 = 160.0, bird_y2 = 400.0; // Initial positions of the bird
+float bird_speed = 0.5;
+
+//Basic Circle Draw Function:
+void drawCircle(GLfloat rx, GLfloat ry, GLfloat cx, GLfloat cy){
+    glBegin(GL_POLYGON);
+    for (int i = 0; i <= 360; i++)
+    {
+        float angle = i * 3.1416 / 180;
+        float x = rx * cos(angle);
+        float y = ry * sin(angle);
+        glVertex2f(x + cx, y + cy);
+    }
+    glEnd();
+}
+
+// Function to plot the points in all 8 octants
+void plotCirclePoints(int x_center, int y_center, int x, int y){
+    glVertex2f(x_center + x, y_center + y);
+    glVertex2f(x_center - x, y_center + y);
+    glVertex2f(x_center + x, y_center - y);
+    glVertex2f(x_center - x, y_center - y);
+    glVertex2f(x_center + y, y_center + x);
+    glVertex2f(x_center - y, y_center + x);
+    glVertex2f(x_center + y, y_center - x);
+    glVertex2f(x_center - y, y_center - x);
+}
+
+// Midpoint Circle Algorithm to draw a circle
+void drawCircleforSun(int x_center, int y_center, int radius){
+    int x = 0;
+    int y = radius;
+    int p = 1 - radius;
+
+    glBegin(GL_POLYGON);
+    plotCirclePoints(x_center, y_center, x, y);
+
+    while (x < y){
+        x++;
+        if (p < 0){
+            p += 2 * x + 1;
+        }
+        else{
+            y--;
+            p += 2 * (x - y) + 1;
+        }
+        plotCirclePoints(x_center, y_center, x, y);
+    }
+    glEnd();
+}
+
+// DDA Line Algorithm Function
+void DDA_Bird(float x_start, float y_start, float x_end, float y_end)
+{
+    glPointSize(2.0);
+    glColor3ub(0, 0, 0);
+    float dx = x_end - x_start;
+    float dy = y_end - y_start;
+    float m = dy / dx;
+
+    float x = x_start;
+    float y = y_start;
+
+    glBegin(GL_POINTS);
+
+    if (fabs(m) <= 1){
+        while (x <= x_end){
+            glVertex2f(x, y);
+            x = x + 1;
+            y = y + m;
+        }
+    }
+    else{
+        while (y <= y_end){
+            glVertex2f(x, y);
+            x = x + (1 / m);
+            y = y + 1;
+        }
+    }
+    glEnd();
+}
+
+// SMALL TREE
+void smallTree(float x, float y){
+    glColor3f(0, 0, 0);
+    glBegin(GL_POLYGON);
+    glVertex2f(x - 5, y);
+    glVertex2f(x + 5, y);
+
+    glVertex2f(x + 5, y + 25);
+    glVertex2f(x - 5, y + 25);
+    glEnd();
+    glColor3ub(34, 139, 34);
+    drawCircle(15, 20, x, y + 45);
+    drawCircle(12, 18, x - 12, y + 35);
+    drawCircle(12, 18, x + 12, y + 35);
+}
+
+// MAIN BOAT (OLD ONE)
+void boat(){
+    glColor3f(0, 0, 0);
+    glBegin(GL_POLYGON);
+    glVertex2d(325, 220);
+    glVertex2d(400, 220);
+    glVertex2d(425, 250);
+    glVertex2d(300, 250);
+    glEnd();
+    glColor3f(0, 1, 0);
+    glBegin(GL_POLYGON);
+    glVertex2d(325, 250);
+    glVertex2d(400, 250);
+    glVertex2d(390, 280);
+    glVertex2d(335, 280);
+    glEnd();
+    glColor3ub(160, 82, 45);
+    glBegin(GL_POLYGON);
+
+    glVertex2d(360, 280);
+    glVertex2d(370, 280);
+    glVertex2d(370, 310);
+    glVertex2d(360, 310);
+    glEnd();
+    glColor3ub(128, 0, 128);
+    glBegin(GL_POLYGON);
+    glVertex2d(335, 290);
+    glVertex2d(390, 290);
+    glVertex2d(390, 375);
+    glVertex2d(335, 375);
+    glEnd();
+}
+
+// NEW BOAT INSIDE RIVER
+void riverBoat(){
+    glColor3ub(0, 0, 0);
+    glBegin(GL_POLYGON);
+    glVertex2d(320, 120);
+    glVertex2d(380, 120);
+    glVertex2d(400, 145);
+    glVertex2d(300, 145);
+    glEnd();
+    glColor3ub(205, 133, 63);
+    glBegin(GL_POLYGON);
+    glVertex2d(320, 145);
+    glVertex2d(380, 145);
+
+    glVertex2d(370, 170);
+    glVertex2d(330, 170);
+    glEnd();
+}
+
+// BOY IN FIELD CENTER + KITE
+void boyAndKite(){
+    float bx = 150, by = 150;
+    float kiteX = 380 + 10 * sin(frame * 0.05);
+    float kiteY = 430 + 5 * cos(frame * 0.05);
+    // legs
+    glColor3ub(0, 0, 0);
+    glBegin(GL_LINES);
+    glVertex2f(bx - 5, by + 20);
+    glVertex2f(bx - 5, by);
+    glVertex2f(bx + 5, by + 20);
+    glVertex2f(bx + 5, by);
+    glEnd();
+    // body
+    glColor3ub(0, 0, 255);
+    glBegin(GL_POLYGON);
+    glVertex2f(bx - 10, by + 20);
+    glVertex2f(bx + 10, by + 20);
+    glVertex2f(bx + 10, by + 45);
+    glVertex2f(bx - 10, by + 45);
+    glEnd();
+    // head
+
+    glColor3ub(255, 224, 189);
+    drawCircle(7, 9, bx, by + 58);
+    // left hand
+    glColor3ub(0, 0, 0);
+    glBegin(GL_LINES);
+    glVertex2f(bx - 10, by + 40);
+    glVertex2f(bx - 25, by + 55);
+    glEnd();
+    // right hand + kite string
+    glBegin(GL_LINES);
+    glVertex2f(bx + 10, by + 40);
+    glVertex2f(kiteX, kiteY);
+    glEnd();
+    // kite
+    glColor3ub(255, 0, 0);
+    glBegin(GL_POLYGON);
+    glVertex2f(kiteX, kiteY);
+    glVertex2f(kiteX + 20, kiteY + 25);
+    glVertex2f(kiteX, kiteY + 50);
+    glVertex2f(kiteX - 20, kiteY + 25);
+    glEnd();
+    // tail
+    glColor3ub(0, 0, 0);
+    glBegin(GL_LINES);
+    glVertex2f(kiteX, kiteY);
+    glVertex2f(kiteX, kiteY - 35);
+    glEnd();
+}
+
+// ANIMATION TIMER
+void timer(int value){
+    if (!paused){
+        frame++;
+        p += speed;
+        if (p > 200)
+            p = -425;
+        if (p < -425)
+            p = 200;
+
+        flap = 5 * sin(frame * 0.3);
+
+        bird_x1 += bird_speed; // Move the bird along the x-axis
+        bird_x2 += bird_speed;
+
+        // Reset bird's position when it moves off the screen (loop the bird)
+        if (bird_x1 > 500.0){
+            bird_x1 = -100.0;
+            bird_x2 = -80.0;
+        }
+    }
+    glutPostRedisplay();
+    glutTimerFunc(16, timer, 0);
+}
+
+// SPECIAL KEYBOARD CALLBACK
+void special(int key, int xx, int yy){
+    switch (key){
+    case GLUT_KEY_LEFT:
+        p -= 0.3;
+        break;
+
+    case GLUT_KEY_RIGHT:
+        p += 0.3;
+        break;
+    }
+    glutPostRedisplay();
+}
+
+// ----------------------------------
+// KEYBOARD CALLBACK FOR DAY/NIGHT TOGGLE
+// ----------------------------------
+void keyboard(unsigned char key, int x, int y){
+    switch (key){
+    case 'd':
+    case 'D':
+        isDay = 1; // Day mode
+        break;
+    case 'n':
+    case 'N':
+        isDay = 0; // Night mode
+        break;
+    case 'p': // pause/unpause
+        paused = !paused;
+        break;
+    case 'r': // reset position
+        p = 0;
+        break;
+    case '+': // increase speed
+        speed += 0.01;
+        break;
+
+    case '-': // decrease speed
+        speed -= 0.01;
+        if (speed < 0)
+            speed = 0;
+        break;
+    case 'o': // open door
+        door_open = 1;
+        break;
+    case 'c': // close door
+        door_open = 0;
+        break;
+    default:
+        break;
+    }
+    glutPostRedisplay(); // Redraw the scene
+}
+
+// INIT
+void init(void){
+    glMatrixMode(GL_PROJECTION);
+    gluOrtho2D(0, 500, 0, 500);
+}
+// ----------------------------------
+// DISPLAY
+// ----------------------------------
+void display(void){
+
+    // Set clear color based on day/night
+    if (isDay){
+        glClearColor(0.0, 0.9, 0.9, 1.0); // Light blue for day
+    }
+    else{
+        glClearColor(0.0, 0.0, 0.3, 1.0); // Dark blue for night
+    }
+    glClear(GL_COLOR_BUFFER_BIT);
+    // Ground
+    glColor3ub(0, 255, 0);
+    glBegin(GL_POLYGON);
+    glVertex2d(0, 0);
+    glVertex2d(500, 0);
+    glVertex2d(500, 300);
+    glVertex2d(0, 300);
+    glEnd();
+    // River Top
+    glColor3ub(100, 149, 237);
+    glBegin(GL_POLYGON);
+    glVertex2d(300, 300);
+    glVertex2d(250, 150);
+    glVertex2d(400, 150);
+    glVertex2d(450, 300);
+    glEnd();
+    // River Bottom
+    glBegin(GL_POLYGON);
+    glVertex2d(300, 150);
+    glVertex2d(250, 0);
+    glVertex2d(400, 0);
+    glVertex2d(450, 150);
+    glEnd();
+
+    // Background river
+    glBegin(GL_POLYGON);
+    glVertex2d(-40, 200);
+    glVertex2d(0, 300);
+    glVertex2d(500, 300);
+    glVertex2d(500, 200);
+    glEnd();
+    // Hills
+    glColor3ub(184, 134, 11);
+    glBegin(GL_POLYGON);
+    glVertex2d(-40, 300);
+    glVertex2d(200, 300);
+    glVertex2d(100, 450);
+    glEnd();
+    glColor3ub(218, 165, 32);
+    glBegin(GL_POLYGON);
+    glVertex2d(150, 300);
+    glVertex2d(350, 300);
+    glVertex2d(250, 450);
+    glEnd();
+    glColor3ub(184, 134, 11);
+    glBegin(GL_POLYGON);
+    glVertex2d(300, 300);
+    glVertex2d(520, 300);
+    glVertex2d(400, 450);
+    glEnd();
+    // Small tree
+    smallTree(230, 300);
+    // Boat on land with movement animation
+    glPushMatrix();
+
+    glTranslatef(p, 0, 0);
+    boat();
+    glPopMatrix();
+    // Boat inside river
+    riverBoat();
+    // ADDED: STICK ON RIVER BANK
+    glColor3f(0, 0, 0); // stick
+    glLineWidth(4);     // Thicker line for a stick
+    glBegin(GL_LINES);
+    // Base of the stick at the river edge
+    glVertex2d(260, 150);
+    // Top of the stick (mooring point)
+    glVertex2d(260, 180);
+    glEnd();
+    glLineWidth(1);      // Reset line width
+                         // MODIFIED: Rope/Suta connecting river boat to stick
+    glColor3ub(0, 0, 0); // Black rope
+    glLineWidth(1.5);
+    glBegin(GL_LINES);
+    // Attach point on river boat (center-left of the brown part's top edge)
+    glVertex2d(330, 170);
+    // Attach point on the top of the stick
+    glVertex2d(260, 180);
+    glEnd();
+    glLineWidth(2); // Reset line width to the one used for the birds
+                    // Big tree
+    glColor3ub(139, 69, 19);
+    glBegin(GL_POLYGON);
+    glVertex2d(50, 150);
+    glVertex2d(70, 150);
+
+    glVertex2d(70, 300);
+    glVertex2d(50, 300);
+    glEnd();
+    glColor3ub(0, 128, 0);
+    drawCircle(30, 40, 35, 320);
+    drawCircle(30, 40, 85, 320);
+    drawCircle(25, 30, 45, 370);
+    drawCircle(30, 30, 70, 370);
+    drawCircle(25, 30, 55, 400);
+    // Houses
+    glColor3ub(210, 105, 30);
+    glBegin(GL_POLYGON);
+    glVertex2d(100, 220);
+    glVertex2d(200, 220);
+    glVertex2d(175, 270);
+    glVertex2d(130, 270);
+    glEnd();
+    glColor3ub(244, 164, 96);
+    glBegin(GL_POLYGON);
+    glVertex2d(100, 170);
+    glVertex2d(185, 170);
+    glVertex2d(185, 220);
+    glVertex2d(100, 220);
+    glEnd();
+    glColor3ub(160, 82, 45);
+    glBegin(GL_POLYGON);
+    glVertex2d(100, 170);
+    glVertex2d(190, 170);
+    glVertex2d(190, 160);
+    glVertex2d(100, 160);
+
+    glEnd();
+    glColor3ub(160, 82, 45);
+    glBegin(GL_POLYGON);
+    glVertex2d(140, 170);
+    glVertex2d(165, 170);
+    glVertex2d(165, 200);
+    glVertex2d(140, 200);
+    glEnd();
+    // First house
+    glColor3ub(160, 82, 45);
+    glBegin(GL_POLYGON);
+    glVertex2d(0, 220);
+    glVertex2d(135, 220);
+    glVertex2d(110, 270);
+    glVertex2d(25, 270);
+    glEnd();
+    glColor3ub(255, 222, 173);
+    glBegin(GL_POLYGON);
+    glVertex2d(10, 220);
+    glVertex2d(50, 220);
+    glVertex2f(25, 255);
+    glEnd();
+    glBegin(GL_POLYGON);
+    glVertex2d(10, 150);
+    glVertex2d(50, 150);
+    glVertex2d(50, 220);
+    glVertex2d(10, 220);
+    glEnd();
+    glColor3ub(222, 184, 135);
+    glBegin(GL_POLYGON);
+
+    glVertex2d(50, 150);
+    glVertex2d(125, 150);
+    glVertex2d(125, 220);
+    glVertex2d(50, 220);
+    glEnd();
+    glColor3ub(160, 82, 45);
+    glBegin(GL_POLYGON);
+    glVertex2d(10, 150);
+    glVertex2d(125, 150);
+    glVertex2d(125, 140);
+    glVertex2d(10, 140);
+    glEnd();
+    if (door_open)
+    {
+        glColor3ub(0, 0, 0); // dark inside for open door
+    }
+    else
+    {
+        glColor3ub(160, 82, 45); // door color for closed
+    }
+    glBegin(GL_POLYGON);
+    glVertex2d(75, 150);
+    glVertex2d(95, 150);
+    glVertex2d(95, 195);
+    glVertex2d(75, 195);
+    glEnd();
+    glColor3ub(160, 82, 45);
+    glBegin(GL_POLYGON);
+    glVertex2d(20, 200);
+    glVertex2d(35, 200);
+    glVertex2d(35, 175);
+    glVertex2d(20, 175);
+    glEnd();
+
+    // Sun/Moon + Birds
+    if (isDay)
+    {
+        glColor3ub(255, 215, 0); // Yellow drawCircle for day
+        drawCircleforSun(150.0, 450.00, 25.0);
+    }
+    else
+    {
+        glColor3ub(255, 255, 255); // White moon for night
+        drawCircleforSun(150.0, 420.00, 25.0);
+    }
+
+    DDA_Bird(bird_x1, bird_y1, bird_x2, bird_y2);        // First part of the bird
+    DDA_Bird(bird_x1 - 20.0, bird_y2, bird_x1, bird_y1); // Second part of the bird
+
+    // Boy
+    boyAndKite();
+    glFlush();
+}
+// ----------------------------------
+// MAIN
+// ----------------------------------
+int main(int argc, char **argv){
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(900, 500);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("Village Scene - Boy, Boats, River Trees");
+    init();
+
+    glutDisplayFunc(display);
+    glutKeyboardFunc(keyboard); // Add keyboard callback
+    glutTimerFunc(16, timer, 0);
+    glutMainLoop();
+    return 0;
+}
