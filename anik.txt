@@ -1,0 +1,392 @@
+#include <GL/glut.h>
+#include <bits/stdc++.h>
+using namespace std;
+
+float cloudX = 0,  birdX = 90, trainX = -60;
+bool isDay = true;
+
+
+void drawCircle(float x_center, float y_center, float radius) {
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2f(x_center, y_center);
+
+    for (int i = 0; i <= 360; ++i) {
+        float theta = 2 * 3.14159f * float(i) / 360.0;
+        float x = x_center + radius * cosf(theta);
+        float y = y_center + radius * sinf(theta);
+        glVertex2f(x, y);
+    }
+
+    glEnd();
+}
+
+
+// Function to plot the points in all 8 octants
+void plotCirclePoints(int x_center, int y_center, int x, int y){
+    glVertex2f(x_center + x, y_center + y);
+    glVertex2f(x_center - x, y_center + y);
+    glVertex2f(x_center + x, y_center - y);
+    glVertex2f(x_center - x, y_center - y);
+    glVertex2f(x_center + y, y_center + x);
+    glVertex2f(x_center - y, y_center + x);
+    glVertex2f(x_center + y, y_center - x);
+    glVertex2f(x_center - y, y_center - x);
+}
+
+// Midpoint Circle Algorithm to draw a circle
+void midPoint(int x_center, int y_center, int radius){
+    glBegin(GL_POLYGON);
+    int x = 0;
+    int y = radius;
+    int p = 1 - radius;
+
+    plotCirclePoints(x_center, y_center, x, y);
+
+    while (x < y){
+        x++;
+        if (p < 0){
+            p += 2 * x + 1;
+        }
+        else{
+            y--;
+            p += 2 * (x - y) + 1;
+        }
+        plotCirclePoints(x_center, y_center, x, y);
+    }
+    glEnd();
+}
+
+
+// DDA Line Algorithm Function
+void DDA(float x_start, float y_start, float x_end, float y_end){
+    glColor3ub(0, 0, 0);
+    float dx = x_end - x_start;
+    float dy = y_end - y_start;
+    float m = dy / dx;
+
+    float x = x_start;
+    float y = y_start;
+
+    glBegin(GL_POINTS);
+
+    if (fabs(m) <= 1){
+        while (x <= x_end){
+            glVertex2f(x, y);
+            x = x + 1;
+            y = y + m;
+        }
+    }
+    else{
+        while (y <= y_end){
+            glVertex2f(x, y);
+            x = x + (1 / m);
+            y = y + 1;
+        }
+    }
+    glEnd();
+}
+
+
+void drawBackground(){
+    if(isDay) glColor3ub(16, 180, 34); //Feild
+    else glColor3ub(25, 70, 30);
+    glBegin(GL_POLYGON);
+        glVertex2i(-100, -70);
+        glVertex2i( 100, -70);
+        glVertex2i( 100,  -100);
+        glVertex2i(-100,  -100);
+    glEnd();
+
+
+    glColor3ub(74, 62, 45); //Train Root
+    glBegin(GL_POLYGON);
+        glVertex2i(-100, -55);
+        glVertex2i( 100, -55);
+        glVertex2i( 100,  -70);
+        glVertex2i(-100,  -70);
+    glEnd();
+
+    if(isDay) glColor3ub(16, 180, 34); //Feild
+    else glColor3ub(25, 70, 30);
+    glBegin(GL_POLYGON);
+        glVertex2i(-100, -55);
+        glVertex2i( 100, -55);
+        glVertex2i( 100,  -40);
+        glVertex2i(-100,  -40);
+    glEnd();
+
+
+    if(isDay) glColor3ub(211, 242, 245); //Nil
+    else glColor3ub(4, 20, 35); //Kalo
+    glBegin(GL_POLYGON);
+        glVertex2i(-100, -40);
+        glVertex2i( 100, -40);
+        glVertex2i( 100,  100);
+        glVertex2i(-100,  100);
+    glEnd();
+}
+
+void Tree(int x, int y, int r){
+
+    glColor3ub(107, 90, 52);
+    glBegin(GL_POLYGON);
+        glVertex2i(x, y);
+        glVertex2i(x+3, y);
+        glVertex2i(x+3, y+r*2+5);
+        glVertex2i(x,  y+r*2+5);
+    glEnd();
+
+    glColor3ub(41, 133, 64);
+    drawCircle(x+1.5, (y+r*4), r);
+    drawCircle(x-r/2, (y+r*3), r);
+    drawCircle(x+r/2, (y+r*3), r);
+}
+
+void drawCloud(){
+    glColor3ub(255, 255, 255);
+    drawCircle(cloudX, 80, 10);
+    drawCircle(cloudX-10, 80, 5);
+    drawCircle(cloudX+10, 80, 7);
+}
+
+
+void drawTree(){
+    Tree(-98, -40, 10);
+    Tree(-70, -40, 9);
+    Tree(-38, -40, 13);
+    Tree(30, -40, 15);
+    Tree(90, -40, 12);
+}
+
+void drawTree2(){
+    Tree(-88, -70, 9);
+    Tree(-60, -70, 8);
+    Tree(-35, -70, 10);
+    Tree(20, -70, 7);
+    Tree(50, -70, 12);
+    Tree(90, -70, 10);
+}
+
+void drawHouse(){
+    glColor3ub(107, 90, 52);
+    glBegin(GL_POLYGON);
+        glVertex2i(-20, -45);
+        glVertex2i(20, -45);
+        glVertex2i(20, -10);
+        glVertex2i(-20, -10);
+    glEnd();
+
+    glColor3ub(51, 40, 33);
+    glBegin(GL_POLYGON);
+        glVertex2i(-4, -45);
+        glVertex2i(4, -45);
+        glVertex2i(4, -25);
+        glVertex2i(-4, -25);
+    glEnd();
+    glBegin(GL_POLYGON);
+        glVertex2i(7, -37);
+        glVertex2i(13, -37);
+        glVertex2i(13, -25);
+        glVertex2i(7, -25);
+    glEnd();
+
+    glBegin(GL_POLYGON);
+        glVertex2i(-13, -37);
+        glVertex2i(-7, -37);
+        glVertex2i(-7, -25);
+        glVertex2i(-13, -25);
+    glEnd();
+
+    glBegin(GL_POLYGON);
+        glVertex2i(-22, -45);
+        glVertex2i(22, -45);
+        glVertex2i(22, -48);
+        glVertex2i(-22, -48);
+    glEnd();
+
+    glBegin(GL_TRIANGLES);
+        glVertex2i(-22, -10);
+        glVertex2i(22, -10);
+        glVertex2i(0, 5);
+    glEnd();
+}
+
+
+void drawHill(){
+     glColor3ub(94, 77, 36);
+     glBegin(GL_TRIANGLES);
+        glVertex2i(-100, -40);
+        glVertex2i(-70, -40);
+        glVertex2i(-85, 0);
+    glEnd();
+
+    glBegin(GL_TRIANGLES);
+        glVertex2i(-75, -40);
+        glVertex2i(-45, -40);
+        glVertex2i(-60, 0);
+    glEnd();
+
+    glBegin(GL_TRIANGLES);
+        glVertex2i(-60, -40);
+        glVertex2i(-30, -40);
+        glVertex2i(-45, 5);
+    glEnd();
+
+    glBegin(GL_TRIANGLES);
+        glVertex2i(-40, -40);
+        glVertex2i(-0, -40);
+        glVertex2i(-20, 10);
+    glEnd();
+
+    glBegin(GL_TRIANGLES);
+        glVertex2i(-0, -40);
+        glVertex2i(30, -40);
+        glVertex2i(15, 5);
+    glEnd();
+
+    glBegin(GL_TRIANGLES);
+        glVertex2i(20, -40);
+        glVertex2i(60, -40);
+        glVertex2i(40, 10);
+    glEnd();
+
+    glBegin(GL_TRIANGLES);
+        glVertex2i(50, -40);
+        glVertex2i(80, -40);
+        glVertex2i(65, 15);
+    glEnd();
+
+     glBegin(GL_TRIANGLES);
+        glVertex2i(70, -40);
+        glVertex2i(100, -40);
+        glVertex2i(85, 15);
+    glEnd();
+}
+
+void drawSun(){
+    if(isDay) glColor3ub(255, 240, 80);
+    else glColor3ub(255, 255, 255);
+    midPoint(-80, 80, 10);
+}
+
+void drawBird(){
+    glPointSize(6.0);
+    glColor3ub(255, 240, 80);
+
+    //1st Bird
+    DDA(birdX-5, 60, birdX+2, 55);
+    DDA(birdX-2, 55, birdX+5, 60);
+
+}
+
+void drawTrain(){
+    glColor3ub(36, 66, 44);
+    for(int i=0; i<=3; i++){
+    glBegin(GL_POLYGON);
+        glVertex2i(trainX+(i*30+5), -60);
+        glVertex2i(trainX+30+(i*30), -60);
+        glVertex2i(trainX+30+(i*30), -30);
+        glVertex2i(trainX+(i*30+5), -30);
+    glEnd();
+    }
+
+    glLineWidth(8.0);
+    glBegin(GL_LINES);
+        glVertex2i(trainX+5, -53), glVertex2i(trainX+120, -53);
+    glEnd();
+
+    glColor3ub(237, 255, 239);
+    for(int i=0; i<=3; i++){
+    glBegin(GL_POLYGON);
+        glVertex2i(trainX+5+(i*30+5), -50);
+        glVertex2i(trainX+25+(i*30), -50);
+        glVertex2i(trainX+25+(i*30), -40);
+        glVertex2i(trainX+5+(i*30+5), -40);
+    glEnd();
+    }
+
+    glColor3ub(237, 25, 23);
+    glBegin(GL_POLYGON);
+        glVertex2i(trainX+120, -60);
+        glVertex2i(trainX+135, -60);
+        glVertex2i(trainX+135, -35);
+        glVertex2i(trainX+120, -35);
+    glEnd();
+
+    glColor3ub(0, 0, 0);
+    glBegin(GL_LINES);
+        glVertex2i(-100, -64), glVertex2i(100, -64);
+        glVertex2i(-100, -60), glVertex2i(100, -60);
+
+        for(int i=-100; i<=100; i+=5){
+            glVertex2i(i, -60), glVertex2i(i, -64);
+        }
+    glEnd();
+
+    glColor3ub(0, 0, 0);
+    drawCircle(trainX+15, -60, 4);
+    drawCircle(trainX+45, -60, 4);
+    drawCircle(trainX+75, -60, 4);
+    drawCircle(trainX+105, -60, 4);
+    drawCircle(trainX+125, -60, 4);
+
+
+    glColor3ub(255, 255, 255);
+    drawCircle(trainX+15, -60, 2);
+    drawCircle(trainX+45, -60, 2);
+    drawCircle(trainX+75, -60, 2);
+    drawCircle(trainX+105, -60, 2);
+    drawCircle(trainX+125, -60, 2);
+
+}
+
+void animate(int value) {
+
+    cloudX += 0.2;
+    if (cloudX > 150) cloudX = -150;
+
+    birdX -= 0.2;
+    if (birdX < -120) birdX = 120;
+
+    trainX += 0.3;
+    if(trainX > 120) trainX = -200;
+
+    glutPostRedisplay();
+    glutTimerFunc(16, animate, 0);
+}
+
+void keyboard(unsigned char key, int x, int y) {
+    if (key == 'd' || key == 'D') {
+        isDay = true;
+    } else if (key == 'n' || key == 'N') {
+        isDay = false;
+    }
+    glutPostRedisplay();
+}
+
+
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT);
+        drawBackground();
+        drawSun();
+        drawCloud();
+        drawHill();
+        drawHouse();
+        drawBird();
+        drawTree();
+        drawTrain();
+        drawTree2();
+    glFlush();
+}
+
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
+    glutInitWindowSize(1200, 600);
+    glutCreateWindow("Local Train using OpenGL");
+    gluOrtho2D(-100, 100, -100, 100);
+    glutDisplayFunc(display);
+    glutKeyboardFunc(keyboard);
+    glutTimerFunc(0, animate, 0);
+    glutMainLoop();
+    return 0;
+}
